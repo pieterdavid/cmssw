@@ -15,4 +15,5 @@
 <use   name="Geometry/TrackerGeometryBuilder"/>
 <export>
   <lib   name="1"/>
+  <use   name="DataFormats/TrackerCommon"/>
 </export>
