@@ -329,8 +329,6 @@ CosmicRateAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
           else if (SiStripDetId::TID == subdetId1)
           { 
              ++nhitinTID;
-	 
-             tTopo->tidIsZMinusSide(detId1);
 
              if (tTopo->tidIsZMinusSide(detId1))
              {
