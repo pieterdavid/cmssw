@@ -1,4 +1,5 @@
 #include "CalibTracker/SiStripLorentzAngle/interface/LA_Filler_Fitter.h"
+#include "CalibTracker/SiStripLorentzAngle/interface/TIBorTOBparameters.h"
 #include "CalibTracker/SiStripCommon/interface/TTREE_FOREACH_ENTRY.hh"
 
 #include <cmath>
@@ -85,11 +86,11 @@ granularity(const SiStripDetId detid, const float tthetaL, const Long64_t TFE_in
 }
 
 std::string LA_Filler_Fitter::
-subdetLabel(const SiStripDetId detid) { return detid.subDetector()==SiStripDetId::TOB? "TOB" : "TIB";}
+subdetLabel(const SiStripDetId detid) { return detid.subDetector()==SiStripDetId::TOB ? "TOB" : "TIB";}
 std::string LA_Filler_Fitter::
 moduleLabel(const SiStripDetId detid) { return subdetLabel(detid) + "_module"+boost::lexical_cast<std::string>(detid());}
 std::string LA_Filler_Fitter::
 layerLabel(const SiStripDetId detid) {
-  unsigned layer = detid.subDetector() == SiStripDetId::TOB ? TOBDetId(detid()).layer() : TIBDetId(detid()).layer();
+  unsigned layer = detid.subDetector() == getTIBOrTOBLayer(detid);
   return subdetLabel(detid)+"_layer"+boost::lexical_cast<std::string>(layer)+(detid.stereo()?"s":"a");
 }

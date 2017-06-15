@@ -1,9 +1,11 @@
 #include "CalibTracker/SiStripLorentzAngle/plugins/MeasureLA.h"
 #include "CalibTracker/SiStripLorentzAngle/interface/LA_Filler_Fitter.h"
+#include "CalibTracker/SiStripLorentzAngle/interface/TIBorTOBparameters.h"
 #include "CalibTracker/SiStripCommon/interface/SiStripDetInfoFileReader.h"
 #include <boost/lexical_cast.hpp>
 #include <TChain.h>
 #include <TFile.h>
+
 
 namespace sistrip {
 
@@ -179,8 +181,9 @@ calibration_key(const std::string layer, const LA_Filler_Fitter::Method method) 
 std::pair<uint32_t,LA_Filler_Fitter::Method> MeasureLA::
 calibration_key(const uint32_t detid, const LA_Filler_Fitter::Method method) {
   const bool TIB = SiStripDetId(detid).subDetector() == SiStripDetId::TIB;
-  const bool stereo = TIB ? TIBDetId(detid).stereo() : TOBDetId(detid).stereo();
-  const unsigned layer = TIB ? TIBDetId(detid).layer() : TOBDetId(detid).layer();
+  const bool stereo = getTIBorTOBStereo(detid);
+  const unsigned layer = getTIBOrTOBLayer(detid);
+
   return std::make_pair(LA_Filler_Fitter::layer_index(TIB,stereo,layer),method);
 }
 
