@@ -1,12 +1,13 @@
 #ifndef TIBORTOBPARAMETERS_H
 #define TIBORTOBPARAMETERS_H
 
-#include "DataFormats/SiStripDetId/interface/SiStripDetId.h"
+#include "DataFormats/DetId/interface/DetId.h"
 
-// WARNING: This header file is created on the assumption
-// that the subDetector Id (TIB or TOB) is already known.
-// It is used inside CalibTracker/SiStripLorentzAngle only.
-
+//WARNING: these methods assume that the DetId is a
+//TIBDetId or TOBDetId (and don't check this).
+//Please use the corresponding TrackerTopology
+//methods whenever possible.
+//Code copied from TIBDetId and TOBDetId.
 
 uint32_t getTIBOrTOBLayer( DetId detId )
 {
@@ -15,7 +16,7 @@ uint32_t getTIBOrTOBLayer( DetId detId )
 
 bool getTIBorTOBStereo( DetId detId )
 {
-  return ( ((detId.rawId()>>0) & 0x3) == 1 ) ? 1 : 0;
+  return (detId.rawId() & 0x3) == 1;
 };
 
 #endif

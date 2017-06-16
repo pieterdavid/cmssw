@@ -91,6 +91,6 @@ std::string LA_Filler_Fitter::
 moduleLabel(const SiStripDetId detid) { return subdetLabel(detid) + "_module"+boost::lexical_cast<std::string>(detid());}
 std::string LA_Filler_Fitter::
 layerLabel(const SiStripDetId detid) {
-  unsigned layer = detid.subDetector() == getTIBOrTOBLayer(detid);
+  unsigned layer = getTIBOrTOBLayer(detid);
   return subdetLabel(detid)+"_layer"+boost::lexical_cast<std::string>(layer)+(detid.stereo()?"s":"a");
 }
