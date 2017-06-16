@@ -7,7 +7,9 @@
 //TIBDetId or TOBDetId (and don't check this).
 //Please use the corresponding TrackerTopology
 //methods whenever possible.
-//Code copied from TIBDetId and TOBDetId.
+//Code copied from TIBDetId and TOBDetId (see
+//git show CMSSW_9_2_3_patch2:DataFormats/SiStripDetId/interface/TIBDetId.h and
+//git show CMSSW_9_2_3_patch2:DataFormats/SiStripDetId/interface/TOBDetId.h)
 
 uint32_t getTIBOrTOBLayer( DetId detId )
 {
