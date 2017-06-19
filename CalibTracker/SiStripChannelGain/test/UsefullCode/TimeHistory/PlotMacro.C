@@ -431,26 +431,26 @@ void GetAverageGain(string input, string moduleName, stLayerData& layerData )
 
       int LayerID=tree_SubDet*1000;      
       switch (tree_SubDet) {         
-         case SiStripDetId::TIB:
+         case SiStripDetId::TIB:{
             LayerID += getTIBorTOBlayer(tree_DetId);
             sprintf(LayerName,"lTIB%i",getTIBorTOBlayer(tree_DetId));
-            break;
-         case SiStripDetId::TID:
+         }break;
+         case SiStripDetId::TID:{
             LayerID += getTIDside(tree_DetId)*100;
             LayerID += getTIDring(tree_DetId);
             sprintf(LayerName,"rTID%c%i",getTIDside(tree_DetId)==1?'-':'+', getTIDring(tree_DetId));
-            break;
-         case SiStripDetId::TOB:
+         }break;
+         case SiStripDetId::TOB:{
             LayerID += getTIBorTOBlayer(tree_DetId);
             sprintf(LayerName,"lTOB%i",getTIBorTOBlayer(tree_DetId));
-            break;
-         case SiStripDetId::TEC:
+         }break;
+         case SiStripDetId::TEC:{
             LayerID += getTECside(tree_DetId)*100;
             LayerID += getTECring(tree_DetId);
             sprintf(LayerName,"rTEC%c%i",getTECside(tree_DetId)==1?'-':'+', getTECring(tree_DetId));
-            break;
+         }break;
          default:
-            break;
+         break;
       }
       layerData.LayerGain[LayerID] += tree_Gain;
       layerData.LayerGainErr[LayerID] += tree_Gain*tree_Gain;
@@ -460,18 +460,18 @@ void GetAverageGain(string input, string moduleName, stLayerData& layerData )
 
       LayerID=tree_SubDet*1000;
       switch (tree_SubDet) {
-         case SiStripDetId::TID:
+         case SiStripDetId::TID:{
             LayerID += (2+getTIDside(tree_DetId))*100;
             LayerID += getTIDwheel(tree_DetId);
-            sprintf(LayerName,"rTID%c%i",getTIDside(tree_DetId)==1?'-':'+', getTIDwheel(tree_DetId));
-            break;
-         case SiStripDetId::TEC:
+            sprintf(LayerName,"wTID%c%i",getTIDside(tree_DetId)==1?'-':'+', getTIDwheel(tree_DetId));
+         }break;
+         case SiStripDetId::TEC:{
             LayerID += (2+getTECside(tree_DetId))*100;
             LayerID += getTECwheel(tree_DetId);
-            sprintf(LayerName,"rTEC%c%i",getTECside(tree_DetId)==1?'-':'+', getTECwheel(tree_DetId));
-            break;
+            sprintf(LayerName,"wTEC%c%i",getTECside(tree_DetId)==1?'-':'+', getTECwheel(tree_DetId));
+         }break;
          default:
-            break;
+         break;
       }
       if(LayerID!=tree_SubDet*1000){
          layerData.LayerGain[LayerID] += tree_Gain;
