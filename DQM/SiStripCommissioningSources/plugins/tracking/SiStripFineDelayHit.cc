@@ -56,7 +56,6 @@
 #include "CondFormats/DataRecord/interface/SiStripNoisesRcd.h"
 #include <CondFormats/SiStripObjects/interface/SiStripNoises.h>
 
-
 #include "DataFormats/GeometryVector/interface/GlobalPoint.h"
 #include "DataFormats/GeometryVector/interface/GlobalVector.h"
 #include "DataFormats/GeometryVector/interface/LocalVector.h"
@@ -119,46 +118,56 @@ SiStripFineDelayHit::~SiStripFineDelayHit()
 //
 // member functions
 //
-std::pair<uint32_t, uint32_t> SiStripFineDelayHit::deviceMask(const StripSubdetector::SubDetector subdet,const int substructure)
+std::pair<uint32_t, uint32_t> SiStripFineDelayHit::deviceMask(const StripSubdetector::SubDetector subdet,const int substructure, const TrackerTopology *tTopo)
 {
   uint32_t rootDetId = 0;
   uint32_t maskDetId = 0;
+
+
   switch(subdet){
     case (int)StripSubdetector::TIB :
     {
-      rootDetId = TIBDetId(substructure,0,0,0,0,0).rawId();
-      maskDetId = TIBDetId(15,0,0,0,0,0).rawId();
+	  rootDetId = (uint32_t)tTopo->tibDetId(substructure,0,0,0,0,0);
+      maskDetId = (uint32_t)tTopo->tibDetId(15,0,0,0,0,0);
+      //rootDetId = TIBDetId(substructure,0,0,0,0,0).rawId();
+      //maskDetId = TIBDetId(15,0,0,0,0,0).rawId();
       break;
     }
     case (int)StripSubdetector::TID :
     {
-      rootDetId = TIDDetId(substructure>0 ? 2 : 1,abs(substructure),0,0,0,0).rawId();
-      maskDetId = TIDDetId(3,15,0,0,0,0).rawId();
+	  rootDetId = (uint32_t)tTopo->tidDetId(substructure>0 ? 2 : 1,abs(substructure),0,0,0,0).rawId();
+      maskDetId = (uint32_t)tTopo->tidDetId(3,15,0,0,0,0).rawId(); 
+      //rootDetId = TIDDetId(substructure>0 ? 2 : 1,abs(substructure),0,0,0,0).rawId();
+      //maskDetId = TIDDetId(3,15,0,0,0,0).rawId();
       break;
     }
     case (int)StripSubdetector::TOB :
     {
-      rootDetId = TOBDetId(substructure,0,0,0,0).rawId();
-      maskDetId = TOBDetId(15,0,0,0,0).rawId();
+	  rootDetId = (uint32_t)tTopo->tobDetId(substructure,0,0,0,0).rawId();
+      maskDetId = (uint32_t)tTopo->tobDetId(15,0,0,0,0).rawId(); 
+      //rootDetId = TOBDetId(substructure,0,0,0,0).rawId();
+      //maskDetId = TOBDetId(15,0,0,0,0).rawId();
       break;
     }
     case (int)StripSubdetector::TEC :
     {
-      rootDetId = TECDetId(substructure>0 ? 2 : 1,abs(substructure),0,0,0,0,0).rawId();
-      maskDetId = TECDetId(3,15,0,0,0,0,0).rawId();
+	  rootDetId = (uint32_t)tTopo->tecDetId(substructure>0 ? 2 : 1,abs(substructure),0,0,0,0,0).rawId();
+      maskDetId = (uint32_t)tTopo->tecDetId(3,15,0,0,0,0,0).rawId(); 
+      //rootDetId = TECDetId(substructure>0 ? 2 : 1,abs(substructure),0,0,0,0,0).rawId();
+      //maskDetId = TECDetId(3,15,0,0,0,0,0).rawId();
       break;
     }
   }
   return std::make_pair(maskDetId,rootDetId);
 }
 
-std::vector< std::pair<uint32_t,std::pair<double, double> > > SiStripFineDelayHit::detId(const TrackerGeometry& tracker,const reco::Track* tk, const std::vector<Trajectory>& trajVec, const StripSubdetector::SubDetector subdet,const int substructure)
+std::vector< std::pair<uint32_t,std::pair<double, double> > > SiStripFineDelayHit::detId(const TrackerGeometry& tracker, const TrackerTopology *tkrTopo, const reco::Track* tk, const std::vector<Trajectory>& trajVec, const StripSubdetector::SubDetector subdet,const int substructure)
 {
   if(substructure==0xff) return detId(tracker,tk,trajVec,0,0);
   // first determine the root detId we are looking for
-  std::pair<uint32_t, uint32_t> mask = deviceMask(subdet,substructure);
+  std::pair<uint32_t, uint32_t> mask = deviceMask(subdet,substructure,tkrTopo);
   // then call the method that loops on recHits
-  return detId(tracker,tk,trajVec,mask.first,mask.second);
+  return detId(tracker,tkrTopo,tk,trajVec,mask.first,mask.second);
 }
 
 std::vector< std::pair<uint32_t,std::pair<double, double> > > SiStripFineDelayHit::detId(const TrackerGeometry& tracker,const reco::Track* tk, const std::vector<Trajectory>& trajVec, const uint32_t& maskDetId, const uint32_t& rootDetId)
@@ -401,6 +410,9 @@ SiStripFineDelayHit::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
      //     iEvent.getByLabel(trackLabel_,TrajectoryCollection);
      iEvent.getByToken(trackToken_,TrajectoryCollection);
      trajVec = *(TrajectoryCollection.product());
+     // Get TrackerTopology
+     edm::ESHandle<TrackerTopology> *tTopo;
+     iSetup.get<TrackerTopologyRcd>().get(tTopo);
      // loop on tracks
      for(reco::TrackCollection::const_iterator itrack = tracks->begin(); itrack<tracks->end(); itrack++) {
        // first check the track Pt
@@ -419,7 +431,7 @@ SiStripFineDelayHit::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
          else if(((layerCode>>6)&0x3)==2) subdet = StripSubdetector::TID;
          else if(((layerCode>>6)&0x3)==3) subdet = StripSubdetector::TEC;
          int32_t layerIdx = (layerCode&0xF)*(((layerCode>>4)&0x3) ? -1 : 1);
-         intersections = detId(*tracker,&(*itrack),trajVec,subdet,layerIdx);
+         intersections = detId(*tracker,tTopo,&(*itrack),trajVec,subdet,layerIdx);
        } else {
          // for latency scans, no layer is specified -> no cut on detid
          intersections = detId(*tracker,&(*itrack),trajVec);
@@ -491,6 +503,9 @@ void
 SiStripFineDelayHit::produceNoTracking(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    event_ = &iEvent;
+   // Get TrackerTopology
+   edm::ESHandle<TrackerTopology> *tTopo;
+   iSetup.get<TrackerTopologyRcd>().get(tTopo);
    // container for the selected hits
    std::vector< edm::DetSet<SiStripRawDigi> > output;
    output.reserve(100);
@@ -505,7 +520,7 @@ SiStripFineDelayHit::produceNoTracking(edm::Event& iEvent, const edm::EventSetup
    else if(((layerCode>>6)&0x3)==2) subdet = StripSubdetector::TID;
    else if(((layerCode>>6)&0x3)==3) subdet = StripSubdetector::TEC;
    int32_t layerIdx = (layerCode&0xF)*(((layerCode>>4)&0x3) ? -1 : 1);
-   std::pair<uint32_t, uint32_t> mask = deviceMask(subdet,layerIdx);
+   std::pair<uint32_t, uint32_t> mask = deviceMask(subdet,layerIdx,tTopo);
    // look at the clusters 
    edm::Handle<edmNew::DetSetVector<SiStripCluster> > clusters;
    //   iEvent.getByLabel(clusterLabel_,clusters);
