@@ -1,9 +1,12 @@
 #include "CalibTracker/SiStripLorentzAngle/interface/LA_Filler_Fitter.h"
-#include "CalibTracker/SiStripLorentzAngle/interface/TIBorTOBparameters.h"
 #include "CalibTracker/SiStripCommon/interface/TTREE_FOREACH_ENTRY.hh"
 
 #include <cmath>
 #include <boost/lexical_cast.hpp>
+
+namespace {
+  uint32_t getTIBOrTOBLayer( DetId detId ) { return ((detId.rawId()>>14) & 0x7); };
+}
 
 void LA_Filler_Fitter::
 fill(TTree* tree, Book& book) const {
