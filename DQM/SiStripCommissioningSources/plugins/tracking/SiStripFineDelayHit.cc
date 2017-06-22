@@ -38,10 +38,6 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackExtra.h"
 #include "DataFormats/SiStripDetId/interface/StripSubdetector.h"
-#include "DataFormats/SiStripDetId/interface/TECDetId.h"
-#include "DataFormats/SiStripDetId/interface/TIBDetId.h"
-#include "DataFormats/SiStripDetId/interface/TIDDetId.h"
-#include "DataFormats/SiStripDetId/interface/TOBDetId.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2DCollection.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripMatchedRecHit2DCollection.h"
@@ -118,7 +114,7 @@ SiStripFineDelayHit::~SiStripFineDelayHit()
 //
 // member functions
 //
-std::pair<uint32_t, uint32_t> SiStripFineDelayHit::deviceMask(const StripSubdetector::SubDetector subdet,const int substructure, const TrackerTopology *tTopo)
+std::pair<uint32_t, uint32_t> SiStripFineDelayHit::deviceMask(const StripSubdetector::SubDetector subdet,const int substructure,const TrackerTopology* tkrTopo)
 {
   uint32_t rootDetId = 0;
   uint32_t maskDetId = 0;
@@ -127,52 +123,44 @@ std::pair<uint32_t, uint32_t> SiStripFineDelayHit::deviceMask(const StripSubdete
   switch(subdet){
     case (int)StripSubdetector::TIB :
     {
-	  rootDetId = (uint32_t)tTopo->tibDetId(substructure,0,0,0,0,0);
-      maskDetId = (uint32_t)tTopo->tibDetId(15,0,0,0,0,0);
-      //rootDetId = TIBDetId(substructure,0,0,0,0,0).rawId();
-      //maskDetId = TIBDetId(15,0,0,0,0,0).rawId();
+      rootDetId = tkrTopo->tibDetId(substructure,0,0,0,0,0).rawId();
+      maskDetId = tkrTopo->tibDetId(15,0,0,0,0,0).rawId();
       break;
     }
     case (int)StripSubdetector::TID :
     {
-	  rootDetId = (uint32_t)tTopo->tidDetId(substructure>0 ? 2 : 1,abs(substructure),0,0,0,0).rawId();
-      maskDetId = (uint32_t)tTopo->tidDetId(3,15,0,0,0,0).rawId(); 
-      //rootDetId = TIDDetId(substructure>0 ? 2 : 1,abs(substructure),0,0,0,0).rawId();
-      //maskDetId = TIDDetId(3,15,0,0,0,0).rawId();
+      rootDetId = tkrTopo->tidDetId(substructure>0 ? 2 : 1,abs(substructure),0,0,0,0).rawId();
+      maskDetId = tkrTopo->tidDetId(3,15,0,0,0,0).rawId();
       break;
     }
     case (int)StripSubdetector::TOB :
     {
-	  rootDetId = (uint32_t)tTopo->tobDetId(substructure,0,0,0,0).rawId();
-      maskDetId = (uint32_t)tTopo->tobDetId(15,0,0,0,0).rawId(); 
-      //rootDetId = TOBDetId(substructure,0,0,0,0).rawId();
-      //maskDetId = TOBDetId(15,0,0,0,0).rawId();
+      rootDetId = tkrTopo->tobDetId(substructure,0,0,0,0).rawId();
+      maskDetId = tkrTopo->tobDetId(15,0,0,0,0).rawId();
       break;
     }
     case (int)StripSubdetector::TEC :
     {
-	  rootDetId = (uint32_t)tTopo->tecDetId(substructure>0 ? 2 : 1,abs(substructure),0,0,0,0,0).rawId();
-      maskDetId = (uint32_t)tTopo->tecDetId(3,15,0,0,0,0,0).rawId(); 
-      //rootDetId = TECDetId(substructure>0 ? 2 : 1,abs(substructure),0,0,0,0,0).rawId();
-      //maskDetId = TECDetId(3,15,0,0,0,0,0).rawId();
+      rootDetId = tkrTopo->tecDetId(substructure>0 ? 2 : 1,abs(substructure),0,0,0,0,0).rawId();
+      maskDetId = tkrTopo->tecDetId(3,15,0,0,0,0,0).rawId();
       break;
     }
   }
   return std::make_pair(maskDetId,rootDetId);
 }
 
-std::vector< std::pair<uint32_t,std::pair<double, double> > > SiStripFineDelayHit::detId(const TrackerGeometry& tracker, const TrackerTopology *tkrTopo, const reco::Track* tk, const std::vector<Trajectory>& trajVec, const StripSubdetector::SubDetector subdet,const int substructure)
+std::vector< std::pair<uint32_t,std::pair<double, double> > > SiStripFineDelayHit::detId(const TrackerGeometry& tracker, const TrackerTopology* tkrTopo, const reco::Track* tk, const std::vector<Trajectory>& trajVec, const StripSubdetector::SubDetector subdet,const int substructure)
 {
-  if(substructure==0xff) return detId(tracker,tk,trajVec,0,0);
+  if(substructure==0xff) return detId(tracker,tkrTopo,tk,trajVec,0,0);
   // first determine the root detId we are looking for
   std::pair<uint32_t, uint32_t> mask = deviceMask(subdet,substructure,tkrTopo);
   // then call the method that loops on recHits
   return detId(tracker,tkrTopo,tk,trajVec,mask.first,mask.second);
 }
 
-std::vector< std::pair<uint32_t,std::pair<double, double> > > SiStripFineDelayHit::detId(const TrackerGeometry& tracker,const reco::Track* tk, const std::vector<Trajectory>& trajVec, const uint32_t& maskDetId, const uint32_t& rootDetId)
+std::vector< std::pair<uint32_t,std::pair<double, double> > > SiStripFineDelayHit::detId(const TrackerGeometry& tracker, const TrackerTopology* tkrTopo, const reco::Track* tk, const std::vector<Trajectory>& trajVec, const uint32_t& maskDetId, const uint32_t& rootDetId)
 {
-  bool onDisk = ((maskDetId==TIDDetId(3,15,0,0,0,0).rawId())||(maskDetId==TECDetId(3,15,0,0,0,0,0).rawId())) ;
+  bool onDisk = ((maskDetId==tkrTopo->tidDetId(3,15,0,0,0,0).rawId())||(maskDetId==tkrTopo->tecDetId(3,15,0,0,0,0,0).rawId())) ;
   std::vector< std::pair<uint32_t,std::pair<double, double> > > result;
   std::vector<uint32_t> usedDetids;
   // now loop on recHits to find the right detId plus the track local angle
@@ -411,7 +399,7 @@ SiStripFineDelayHit::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
      iEvent.getByToken(trackToken_,TrajectoryCollection);
      trajVec = *(TrajectoryCollection.product());
      // Get TrackerTopology
-     edm::ESHandle<TrackerTopology> *tTopo;
+     edm::ESHandle<TrackerTopology> tTopo;
      iSetup.get<TrackerTopologyRcd>().get(tTopo);
      // loop on tracks
      for(reco::TrackCollection::const_iterator itrack = tracks->begin(); itrack<tracks->end(); itrack++) {
@@ -431,10 +419,10 @@ SiStripFineDelayHit::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
          else if(((layerCode>>6)&0x3)==2) subdet = StripSubdetector::TID;
          else if(((layerCode>>6)&0x3)==3) subdet = StripSubdetector::TEC;
          int32_t layerIdx = (layerCode&0xF)*(((layerCode>>4)&0x3) ? -1 : 1);
-         intersections = detId(*tracker,tTopo,&(*itrack),trajVec,subdet,layerIdx);
+         intersections = detId(*tracker,tTopo.product(),&(*itrack),trajVec,subdet,layerIdx);
        } else {
          // for latency scans, no layer is specified -> no cut on detid
-         intersections = detId(*tracker,&(*itrack),trajVec);
+         intersections = detId(*tracker,tTopo.product(),&(*itrack),trajVec);
        }
        LogDebug("produce") << "  Found " << intersections.size() << " interesting intersections." << std::endl;
        for(std::vector< std::pair<uint32_t,std::pair<double,double> > >::iterator it = intersections.begin();it<intersections.end();it++) {
@@ -504,7 +492,7 @@ SiStripFineDelayHit::produceNoTracking(edm::Event& iEvent, const edm::EventSetup
 {
    event_ = &iEvent;
    // Get TrackerTopology
-   edm::ESHandle<TrackerTopology> *tTopo;
+   edm::ESHandle<TrackerTopology> tTopo;
    iSetup.get<TrackerTopologyRcd>().get(tTopo);
    // container for the selected hits
    std::vector< edm::DetSet<SiStripRawDigi> > output;
@@ -520,7 +508,7 @@ SiStripFineDelayHit::produceNoTracking(edm::Event& iEvent, const edm::EventSetup
    else if(((layerCode>>6)&0x3)==2) subdet = StripSubdetector::TID;
    else if(((layerCode>>6)&0x3)==3) subdet = StripSubdetector::TEC;
    int32_t layerIdx = (layerCode&0xF)*(((layerCode>>4)&0x3) ? -1 : 1);
-   std::pair<uint32_t, uint32_t> mask = deviceMask(subdet,layerIdx,tTopo);
+   std::pair<uint32_t, uint32_t> mask = deviceMask(subdet,layerIdx,tTopo.product());
    // look at the clusters 
    edm::Handle<edmNew::DetSetVector<SiStripCluster> > clusters;
    //   iEvent.getByLabel(clusterLabel_,clusters);
