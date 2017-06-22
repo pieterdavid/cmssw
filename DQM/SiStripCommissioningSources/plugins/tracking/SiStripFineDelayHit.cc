@@ -121,25 +121,25 @@ std::pair<uint32_t, uint32_t> SiStripFineDelayHit::deviceMask(const StripSubdete
 
 
   switch(subdet){
-    case (int)StripSubdetector::TIB :
+    case StripSubdetector::TIB :
     {
       rootDetId = tkrTopo->tibDetId(substructure,0,0,0,0,0).rawId();
       maskDetId = tkrTopo->tibDetId(15,0,0,0,0,0).rawId();
       break;
     }
-    case (int)StripSubdetector::TID :
+    case StripSubdetector::TID :
     {
       rootDetId = tkrTopo->tidDetId(substructure>0 ? 2 : 1,abs(substructure),0,0,0,0).rawId();
       maskDetId = tkrTopo->tidDetId(3,15,0,0,0,0).rawId();
       break;
     }
-    case (int)StripSubdetector::TOB :
+    case StripSubdetector::TOB :
     {
       rootDetId = tkrTopo->tobDetId(substructure,0,0,0,0).rawId();
       maskDetId = tkrTopo->tobDetId(15,0,0,0,0).rawId();
       break;
     }
-    case (int)StripSubdetector::TEC :
+    case StripSubdetector::TEC :
     {
       rootDetId = tkrTopo->tecDetId(substructure>0 ? 2 : 1,abs(substructure),0,0,0,0,0).rawId();
       maskDetId = tkrTopo->tecDetId(3,15,0,0,0,0,0).rawId();
