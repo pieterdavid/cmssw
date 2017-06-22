@@ -114,7 +114,7 @@ SiStripFineDelayHit::~SiStripFineDelayHit()
 //
 // member functions
 //
-DeviceMask SiStripFineDelayHit::deviceMask(const StripSubdetector::SubDetector subdet,const int substructure,const TrackerTopology* tkrTopo)
+SiStripFineDelayHit::DeviceMask SiStripFineDelayHit::deviceMask(const StripSubdetector::SubDetector subdet,const int substructure,const TrackerTopology* tkrTopo)
 {
   uint32_t rootDetId = 0;
   uint32_t maskDetId = 0;

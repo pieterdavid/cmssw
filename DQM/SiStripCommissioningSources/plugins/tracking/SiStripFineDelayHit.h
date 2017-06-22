@@ -35,7 +35,6 @@
 //
 // class decleration
 //
-using DeviceMask = std::pair<uint32_t,uint32_t>;
 
 class SiStripFineDelayHit : public edm::EDProducer {
    public:
@@ -46,6 +45,7 @@ class SiStripFineDelayHit : public edm::EDProducer {
       virtual void beginRun(const edm::Run &, const edm::EventSetup &) override;
       virtual void produce(edm::Event&, const edm::EventSetup&) override;
       virtual void produceNoTracking(edm::Event&, const edm::EventSetup&);
+      using DeviceMask = std::pair<uint32_t,uint32_t>;
 	  DeviceMask deviceMask(const StripSubdetector::SubDetector subdet,const int substructure,const TrackerTopology* tkrTopo);
       std::vector< std::pair<uint32_t,std::pair<double, double> > > detId(const TrackerGeometry& tracker, const TrackerTopology* tkrTopo, const reco::Track* tk, const std::vector<Trajectory>& trajVec, const StripSubdetector::SubDetector subdet = StripSubdetector::TIB,const int substructure=0xff);
       std::vector< std::pair<uint32_t,std::pair<double, double> > > detId(const TrackerGeometry& tracker, const TrackerTopology* tkrTopo, const reco::Track* tk, const std::vector<Trajectory>& trajVec, const uint32_t& maskDetId, const uint32_t& rootDetId);
