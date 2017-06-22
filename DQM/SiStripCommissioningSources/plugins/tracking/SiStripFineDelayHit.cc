@@ -114,7 +114,7 @@ SiStripFineDelayHit::~SiStripFineDelayHit()
 //
 // member functions
 //
-std::pair<uint32_t, uint32_t> SiStripFineDelayHit::deviceMask(const StripSubdetector::SubDetector subdet,const int substructure,const TrackerTopology* tkrTopo)
+DeviceMask SiStripFineDelayHit::deviceMask(const StripSubdetector::SubDetector subdet,const int substructure,const TrackerTopology* tkrTopo)
 {
   uint32_t rootDetId = 0;
   uint32_t maskDetId = 0;
@@ -153,7 +153,7 @@ std::vector< std::pair<uint32_t,std::pair<double, double> > > SiStripFineDelayHi
 {
   if(substructure==0xff) return detId(tracker,tkrTopo,tk,trajVec,0,0);
   // first determine the root detId we are looking for
-  std::pair<uint32_t, uint32_t> mask = deviceMask(subdet,substructure,tkrTopo);
+  DeviceMask mask = deviceMask(subdet,substructure,tkrTopo);
   // then call the method that loops on recHits
   return detId(tracker,tkrTopo,tk,trajVec,mask.first,mask.second);
 }
@@ -508,7 +508,7 @@ SiStripFineDelayHit::produceNoTracking(edm::Event& iEvent, const edm::EventSetup
    else if(((layerCode>>6)&0x3)==2) subdet = StripSubdetector::TID;
    else if(((layerCode>>6)&0x3)==3) subdet = StripSubdetector::TEC;
    int32_t layerIdx = (layerCode&0xF)*(((layerCode>>4)&0x3) ? -1 : 1);
-   std::pair<uint32_t, uint32_t> mask = deviceMask(subdet,layerIdx,tTopo.product());
+   DeviceMask mask = deviceMask(subdet,layerIdx,tTopo.product());
    // look at the clusters 
    edm::Handle<edmNew::DetSetVector<SiStripCluster> > clusters;
    //   iEvent.getByLabel(clusterLabel_,clusters);
