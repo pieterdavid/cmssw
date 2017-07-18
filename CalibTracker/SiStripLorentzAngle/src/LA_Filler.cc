@@ -4,9 +4,6 @@
 #include <cmath>
 #include <boost/lexical_cast.hpp>
 
-namespace {
-  uint32_t getTIBOrTOBLayer( DetId detId ) { return ((detId.rawId()>>14) & 0x7); };
-}
 
 void LA_Filler_Fitter::
 fill(TTree* tree, Book& book) const {
@@ -76,7 +73,7 @@ poly<std::string> LA_Filler_Fitter::
 granularity(const SiStripDetId detid, const float tthetaL, const Long64_t TFE_index, const float localy, const unsigned apvstrip) const {
   poly<std::string> gran;
   gran += subdetLabel(detid);
-  if(byLayer_)  gran *= layerLabel(detid);
+  if(byLayer_)  gran *= layerLabel(detid); 
   if(byModule_) gran *= moduleLabel(detid);
   if(localYbin_) gran += (localy < 0 ? "_yM":"_yP") + boost::lexical_cast<std::string>(abs((int)(localy/localYbin_+(localy<0?-1:0))));
   if(stripsPerBin_) gran += "_strip"+boost::lexical_cast<std::string>((unsigned)((0.5+((apvstrip/64)?(127-apvstrip):apvstrip)/stripsPerBin_)*stripsPerBin_) );
@@ -93,7 +90,10 @@ subdetLabel(const SiStripDetId detid) { return detid.subDetector()==SiStripDetId
 std::string LA_Filler_Fitter::
 moduleLabel(const SiStripDetId detid) { return subdetLabel(detid) + "_module"+boost::lexical_cast<std::string>(detid());}
 std::string LA_Filler_Fitter::
-layerLabel(const SiStripDetId detid) {
-  unsigned layer = getTIBOrTOBLayer(detid);
-  return subdetLabel(detid)+"_layer"+boost::lexical_cast<std::string>(layer)+(detid.stereo()?"s":"a");
+layerLabel(const SiStripDetId detid) const {
+  const bool isTIB = detid.subdetId() == StripSubdetector::TIB;
+  unsigned layer = isTIB ? tTopo_->tibLayer(detid) : tTopo_->tobLayer(detid);
+  bool stereo = isTIB ? tTopo_->tibStereo(detid) : tTopo_->tobStereo(detid);
+  
+  return subdetLabel(detid)+"_layer"+boost::lexical_cast<std::string>(layer)+(stereo?"s":"a");
 }
