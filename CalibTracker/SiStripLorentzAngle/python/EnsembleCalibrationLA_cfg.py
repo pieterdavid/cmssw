@@ -3,7 +3,6 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("MACRO")
 process.add_(cms.Service("MessageLogger"))
 process.source = cms.Source("EmptySource")
-
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
 
 from CalibTracker.SiStripLorentzAngle.MeasureLA_cff import METHOD_WIDTH, METHOD_PROB1, METHOD_AVGV2, METHOD_AVGV3, METHOD_RMSV2, METHOD_RMSV3
