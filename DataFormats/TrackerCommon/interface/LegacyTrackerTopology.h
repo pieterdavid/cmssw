@@ -4,6 +4,12 @@
 #include "DataFormats/TrackerCommon/interface/TrackerTopology.h"
 #include "DataFormats/DetId/interface/DetId.h"
 
+
+// WARNING: this header has been introduced to call a TrackerTopology
+// object whenever it is not possible to access it trough an EventSeup.
+// Do not use it if that is the case.
+
+
 namespace LegacyTrackerTopology {
   
   inline static std::unique_ptr<TrackerTopology> getTrackerTopology()
