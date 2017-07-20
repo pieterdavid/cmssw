@@ -6,7 +6,7 @@
 
 
 // WARNING: this header has been introduced to call a TrackerTopology
-// object whenever it is not possible to access it trough an EventSeup.
+// object whenever it is not possible to access it through an EventSetup.
 // Do not use it if that is the case.
 
 
