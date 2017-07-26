@@ -1,7 +1,8 @@
 #include "DataFormats/SiPixelDetId/interface/PixelModuleName.h"
 
+PixelModuleName::~PixelModuleName() {}
 
-std::ostream & operator<<( std::ostream& out, const PixelModuleName::ModuleType & t)
+std::ostream & operator<<( std::ostream& out, const PixelModuleName::ModuleType& t )
 {
   switch (t) {
     case(PixelModuleName::v1x2) : {out << "v1x2"; break;}
@@ -15,4 +16,3 @@ std::ostream & operator<<( std::ostream& out, const PixelModuleName::ModuleType 
   };
   return out;
 }
-
