@@ -30,7 +30,7 @@ void SiStripBadComponentsDQMService::getMetaDataString(std::stringstream& ss)
 {
   ss << "Run " << getRunNumber() << std::endl;
   readBadComponents();
-  obj_->printSummary(ss);
+  obj_->printSummary(ss, nullptr); // FIXME FIXME FIXME will crash
 }
 
 bool SiStripBadComponentsDQMService::checkForCompatibility(std::string ss)
